@@ -1,0 +1,101 @@
+import { useEffect, useState } from "react";
+import { Link, useParams } from "react-router-dom";
+
+import { loadFestivalById } from "../services/festivalService";
+import GroupCard from "../components/GroupCard";
+import MembersList from "../components/MembersList";
+import PackingList from "../components/PackingList";
+import CarpoolsList from "../components/CarpoolsList";
+
+export default function FestivalDetailPage() {
+  const { festivalId } = useParams();
+
+  const [festivalData, setFestivalData] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        const data = await loadFestivalById(festivalId);
+        setFestivalData(data);
+      } catch (error) {
+        console.error("Fehler beim Laden der Festivaldetails:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadData();
+  }, [festivalId]);
+
+  if (loading) {
+    return (
+      <main className="min-h-screen bg-slate-950 p-10 text-slate-100">
+        Lade Festival...
+      </main>
+    );
+  }
+
+  if (!festivalData?.festival) {
+    return (
+      <main className="min-h-screen bg-slate-950 p-10 text-slate-100">
+        <Link to="/" className="text-blue-400 hover:underline">
+          ← Zurück
+        </Link>
+
+        <h1 className="mt-6 text-2xl font-bold">
+          Festival nicht gefunden
+        </h1>
+      </main>
+    );
+  }
+
+  const { festival, groups, members, packingItems, carpools } = festivalData;
+
+  return (
+    <main className="min-h-screen bg-slate-950 text-slate-100">
+      <div className="mx-auto max-w-5xl px-4 py-10">
+        <Link to="/" className="text-sm text-blue-400 hover:underline">
+          ← Zurück zur Übersicht
+        </Link>
+
+        <header className="mt-6 rounded-2xl border border-slate-800 bg-slate-900 p-6">
+          <h1 className="text-3xl font-bold">{festival.name}</h1>
+
+          <p className="mt-2 text-slate-400">
+            {festival.location}
+          </p>
+        </header>
+
+        <section className="mt-8 space-y-6">
+          <h2 className="text-xl font-semibold">Gruppen</h2>
+
+          {groups.map((group) => {
+            const groupMembers = members.filter(
+              (member) => member.group === group.id
+            );
+
+            const groupPackingItems = packingItems.filter(
+              (item) => item.group === group.id
+            );
+
+            const groupCarpools = carpools.filter(
+              (carpool) => carpool.group === group.id
+            );
+
+            return (
+              <GroupCard key={group.id} group={group}>
+                <div className="mt-5 grid gap-5 md:grid-cols-2">
+                  <MembersList members={groupMembers} />
+                  <PackingList items={groupPackingItems} />
+                </div>
+
+                <CarpoolsList carpools={groupCarpools} />
+              </GroupCard>
+            );
+          })}
+        </section>
+      </div>
+    </main>
+  );
+}

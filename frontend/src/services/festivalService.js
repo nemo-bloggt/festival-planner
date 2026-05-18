@@ -7,6 +7,8 @@ export async function loadFestivalData() {
       sort: "-created",
     });
 
+    
+
   const groupRecords = await pb
     .collection("groups")
     .getFullList({
@@ -40,5 +42,25 @@ export async function loadFestivalData() {
     members: memberRecords,
     packingItems: packingRecords,
     carpools: carpoolRecords,
+  };
+}
+
+export async function loadFestivalById(festivalId) {
+  const data = await loadFestivalData();
+
+  return {
+    festival: data.festivals.find(
+      (festival) => festival.id === festivalId
+    ),
+
+    groups: data.groups.filter(
+      (group) => group.festival === festivalId
+    ),
+
+    members: data.members,
+
+    packingItems: data.packingItems,
+
+    carpools: data.carpools,
   };
 }
