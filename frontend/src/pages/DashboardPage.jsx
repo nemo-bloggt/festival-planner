@@ -6,6 +6,7 @@ import GroupCard from "../components/GroupCard";
 import MembersList from "../components/MembersList";
 import PackingList from "../components/PackingList";
 import CarpoolsList from "../components/CarpoolsList";
+import { buildGroupData } from "../utils/groupData";
 
 export default function DashboardPage() {
   const [festivals, setFestivals] = useState([]);
@@ -48,20 +49,22 @@ setCarpools(data.carpools);
 
                   <div className="mt-4 grid gap-4">
                     {festivalGroups.map((group) => {
-                      const groupMembers = members.filter((member) => member.group === group.id);
-                      const groupPackingItems = packingItems.filter((item) => item.group === group.id);
-                      const groupCarpools = carpools.filter((carpool) => carpool.group === group.id);
-
+                      const groupData = buildGroupData(
+  group,
+  members,
+  packingItems,
+  carpools
+);
                       return (
                         <GroupCard key={group.id} group={group}>
 
                           <div className="mt-5 grid gap-5 md:grid-cols-2">
-                      <MembersList members={groupMembers} />
+                      <MembersList members={groupData.members} />
 
-                       <PackingList items={groupPackingItems} />
+                       <PackingList items={groupData.packingItems} />
                           </div>
 
-                          <CarpoolsList carpools={groupCarpools} />
+                          <CarpoolsList carpools={groupData.carpools} />
                         </GroupCard>
                       );
                     })}
