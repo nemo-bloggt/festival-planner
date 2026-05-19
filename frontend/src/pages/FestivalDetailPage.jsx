@@ -4,6 +4,7 @@ import { Link, useParams } from "react-router-dom";
 import { loadFestivalById } from "../services/festivalService";
 import FestivalGroupsSection from "../components/festivals/FestivalGroupsSection";
 import FestivalDetailHeader from "../components/festivals/FestivalDetailHeader";
+import LoadingSpinner from "../components/ui/LoadingSpinner";
 
 export default function FestivalDetailPage() {
   const { festivalId } = useParams();
@@ -29,12 +30,12 @@ const [error, setError] = useState(null);
   }, [festivalId]);
 
   if (loading) {
-    return (
-      <main className="min-h-screen bg-slate-950 p-10 text-slate-100">
-        Lade Festival...
-      </main>
-    );
-  }
+  return (
+    <main className="min-h-screen bg-slate-950 p-10 text-slate-100">
+      <LoadingSpinner text="Lade Festival..." />
+    </main>
+  );
+}
 
   if (error) {
   return (
@@ -82,35 +83,12 @@ const [error, setError] = useState(null);
         <FestivalDetailHeader festival={festival} />
         
 
-        <section className="mt-8 space-y-6">
-          <h2 className="text-xl font-semibold">Gruppen</h2>
-
-          {groups.map((group) => {
-           const groupData = buildGroupData(
-  group,
-  members,
-  packingItems,
-  carpools
-);
-
-            return (
-              <GroupCard key={group.id} group={group}>
-                <div className="mt-5 grid gap-5 md:grid-cols-2">
-                  <MembersList members={groupData.members} />
-                  <PackingList items={groupData.packingItems} />
-                </div>
-
-                <CarpoolsList carpools={groupData.carpools} />
-              </GroupCard>
-            );
-          })}
-          <FestivalGroupsSection
+    <FestivalGroupsSection
   groups={groups}
   members={members}
   packingItems={packingItems}
   carpools={carpools}
 />
-        </section>
       </div>
     </main>
   );

@@ -3,6 +3,8 @@ import MembersList from "../groups/MembersList";
 import PackingList from "../packing/PackingList";
 import CarpoolsList from "../carpools/CarpoolsList";
 import { buildGroupData } from "../../utils/groupData";
+import SectionTitle from "../ui/SectionTitle";
+import EmptyState from "../ui/EmptyState";
 
 export default function FestivalGroupsSection({
   groups,
@@ -12,9 +14,15 @@ export default function FestivalGroupsSection({
 }) {
   return (
     <section className="mt-8 space-y-6">
-      <h2 className="text-xl font-semibold">Gruppen</h2>
+      <SectionTitle>Gruppen</SectionTitle>
+    {groups.length === 0 && (
+        <EmptyState
+            title="Keine Gruppen vorhanden"
+            description="Für dieses Festival wurden noch keine Gruppen angelegt."
+  />
+)}
 
-      {groups.map((group) => {
+    {groups.map((group) => {
         const groupData = buildGroupData(
           group,
           members,
