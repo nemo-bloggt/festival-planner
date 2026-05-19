@@ -7,31 +7,33 @@ import FestivalDetailPage from "../pages/FestivalDetailPage";
 import AdminPage from "../pages/AdminPage";
 import LoginPage from "../pages/LoginPage";
 import ProtectedRoute from "../routes/ProtectedRoute";
+import { AuthProvider } from "../context/AuthContext";
 
 export default function AppRouter() {
   return (
     <BrowserRouter>
-      <Routes>
-        <Route element={<AppLayout />}>
-          <Route path="/" element={<DashboardPage />} />
+  <AuthProvider>
+    <Routes>
+      <Route path="/login" element={<LoginPage />} />
 
-          <Route
-            path="/festivals/:festivalId"
-            element={<FestivalDetailPage />}
-          />
+      <Route
+        element={
+          <ProtectedRoute>
+            <AppLayout />
+          </ProtectedRoute>
+        }
+      >
+        <Route path="/" element={<DashboardPage />} />
 
-          <Route
-  path="/admin"
-  element={
-    <ProtectedRoute>
-      <AdminPage />
-    </ProtectedRoute>
-  }
-/>
+        <Route
+          path="/festivals/:festivalId"
+          element={<FestivalDetailPage />}
+        />
 
-          <Route path="/login" element={<LoginPage />} />
-        </Route>
-      </Routes>
-    </BrowserRouter>
+        <Route path="/admin" element={<AdminPage />} />
+      </Route>
+    </Routes>
+  </AuthProvider>
+</BrowserRouter>
   );
 }
