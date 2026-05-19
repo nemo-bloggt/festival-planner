@@ -12,7 +12,8 @@ export default function FestivalDetailPage() {
   const { festivalId } = useParams();
 
   const [festivalData, setFestivalData] = useState(null);
-  const [loading, setLoading] = useState(true);
+const [loading, setLoading] = useState(true);
+const [error, setError] = useState(null);
 
   useEffect(() => {
     const loadData = async () => {
@@ -20,10 +21,11 @@ export default function FestivalDetailPage() {
         const data = await loadFestivalById(festivalId);
         setFestivalData(data);
       } catch (error) {
-        console.error("Fehler beim Laden der Festivaldetails:", error);
-      } finally {
-        setLoading(false);
-      }
+  console.error("Fehler beim Laden der Festivaldetails:", error);
+  setError("Festival konnte nicht geladen werden.");
+} finally {
+  setLoading(false);
+}
     };
 
     loadData();
@@ -36,6 +38,26 @@ export default function FestivalDetailPage() {
       </main>
     );
   }
+
+  if (error) {
+  return (
+    <main className="min-h-screen bg-slate-950 p-10 text-slate-100">
+      <Link to="/" className="text-blue-400 hover:underline">
+        ← Zurück
+      </Link>
+
+      <div className="mt-6 rounded-2xl border border-red-900 bg-red-950/40 p-6">
+        <h1 className="text-2xl font-bold text-red-300">
+          Festival konnte nicht geladen werden
+        </h1>
+
+        <p className="mt-2 text-red-200">
+          Prüfe bitte, ob die Festival-ID korrekt ist.
+        </p>
+      </div>
+    </main>
+  );
+}
 
   if (!festivalData?.festival) {
     return (
