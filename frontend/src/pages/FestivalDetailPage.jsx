@@ -2,11 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 
 import { loadFestivalById } from "../services/festivalService";
-import GroupCard from "../components/GroupCard";
-import MembersList from "../components/MembersList";
-import PackingList from "../components/PackingList";
-import CarpoolsList from "../components/CarpoolsList";
-import { buildGroupData } from "../utils/groupData";
+import FestivalGroupsSection from "../components/festivals/FestivalGroupsSection";
 import FestivalDetailHeader from "../components/festivals/FestivalDetailHeader";
 
 export default function FestivalDetailPage() {
@@ -108,6 +104,12 @@ const [error, setError] = useState(null);
               </GroupCard>
             );
           })}
+          <FestivalGroupsSection
+  groups={groups}
+  members={members}
+  packingItems={packingItems}
+  carpools={carpools}
+/>
         </section>
       </div>
     </main>
