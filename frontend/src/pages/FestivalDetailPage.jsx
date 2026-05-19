@@ -7,6 +7,7 @@ import MembersList from "../components/MembersList";
 import PackingList from "../components/PackingList";
 import CarpoolsList from "../components/CarpoolsList";
 import { buildGroupData } from "../utils/groupData";
+import FestivalDetailHeader from "../components/festivals/FestivalDetailHeader";
 
 export default function FestivalDetailPage() {
   const { festivalId } = useParams();
@@ -82,13 +83,8 @@ const [error, setError] = useState(null);
           ← Zurück zur Übersicht
         </Link>
 
-        <header className="mt-6 rounded-2xl border border-slate-800 bg-slate-900 p-6">
-          <h1 className="text-3xl font-bold">{festival.name}</h1>
-
-          <p className="mt-2 text-slate-400">
-            {festival.location}
-          </p>
-        </header>
+        <FestivalDetailHeader festival={festival} />
+        
 
         <section className="mt-8 space-y-6">
           <h2 className="text-xl font-semibold">Gruppen</h2>

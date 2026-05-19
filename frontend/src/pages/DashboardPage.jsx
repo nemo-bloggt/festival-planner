@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import AppHeader from '../components/AppHeader';
-import FestivalCard from "../components/FestivalCard";
+import FestivalCard from "../components/festivals/FestivalCard";
 import { loadFestivalData } from "../services/festivalService";
 import GroupCard from "../components/GroupCard";
 import MembersList from "../components/MembersList";
