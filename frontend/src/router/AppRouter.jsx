@@ -8,6 +8,7 @@ import AdminPage from "../pages/AdminPage";
 import LoginPage from "../pages/LoginPage";
 import ProtectedRoute from "../routes/ProtectedRoute";
 import { AuthProvider } from "../context/AuthContext";
+import FestivalCreatePage from "../pages/FestivalCreatePage";
 
 export default function AppRouter() {
   return (
@@ -24,6 +25,8 @@ export default function AppRouter() {
         }
       >
         <Route path="/" element={<DashboardPage />} />
+
+        <Route path="/festivals/new" element={<FestivalCreatePage />} />
 
         <Route
           path="/festivals/:festivalId"
