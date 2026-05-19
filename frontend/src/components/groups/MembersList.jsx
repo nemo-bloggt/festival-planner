@@ -1,4 +1,4 @@
-import { getPersonName } from "../utils/formatters";
+import { getPersonName } from "../../utils/formatters";
 
 function MembersList({ members }) {
   return (

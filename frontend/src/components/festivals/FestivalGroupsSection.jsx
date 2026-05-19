@@ -1,7 +1,7 @@
-import GroupCard from "../GroupCard";
-import MembersList from "../MembersList";
-import PackingList from "../PackingList";
-import CarpoolsList from "../CarpoolsList";
+import GroupCard from "../groups/GroupCard";
+import MembersList from "../groups/MembersList";
+import PackingList from "../packing/PackingList";
+import CarpoolsList from "../carpools/CarpoolsList";
 import { buildGroupData } from "../../utils/groupData";
 
 export default function FestivalGroupsSection({

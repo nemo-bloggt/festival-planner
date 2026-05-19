@@ -2,10 +2,10 @@ import { useEffect, useState } from 'react';
 import AppHeader from '../components/AppHeader';
 import FestivalCard from "../components/festivals/FestivalCard";
 import { loadFestivalData } from "../services/festivalService";
-import GroupCard from "../components/GroupCard";
-import MembersList from "../components/MembersList";
-import PackingList from "../components/PackingList";
-import CarpoolsList from "../components/CarpoolsList";
+import GroupCard from "../components/groups/GroupCard";
+import MembersList from "../components/groups/MembersList";
+import PackingList from "../components/packing/PackingList";
+import CarpoolsList from "../components/carpools/CarpoolsList";
 import { buildGroupData } from "../utils/groupData";
 
 export default function DashboardPage() {

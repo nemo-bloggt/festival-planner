@@ -1,4 +1,8 @@
-import { formatDate, getPersonName, cleanHtmlText } from "../utils/formatters";
+import {
+  formatDate,
+  getPersonName,
+  cleanHtmlText,
+} from "../../utils/formatters";
 
 function CarpoolsList({ carpools }) {
   return (
