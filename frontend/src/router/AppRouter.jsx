@@ -9,6 +9,7 @@ import LoginPage from "../pages/LoginPage";
 import ProtectedRoute from "../routes/ProtectedRoute";
 import { AuthProvider } from "../context/AuthContext";
 import FestivalCreatePage from "../pages/FestivalCreatePage";
+import FestivalEditPage from "../pages/FestivalEditPage";
 
 export default function AppRouter() {
   return (
@@ -32,6 +33,11 @@ export default function AppRouter() {
           path="/festivals/:festivalId"
           element={<FestivalDetailPage />}
         />
+
+        <Route
+  path="/festivals/:festivalId/edit"
+  element={<FestivalEditPage />}
+/>
 
         <Route path="/admin" element={<AdminPage />} />
       </Route>

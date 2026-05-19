@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { createFestival } from "../services/festivalService";
+import { slugify } from "../utils/slugify";
 
 export default function FestivalCreatePage() {
   const navigate = useNavigate();
@@ -18,13 +19,16 @@ export default function FestivalCreatePage() {
   const [loading, setLoading] = useState(false);
 
   function handleChange(event) {
-    const { name, value } = event.target;
+  const { name, value } = event.target;
 
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  }
+  setFormData((prev) => ({
+    ...prev,
+    [name]: value,
+    ...(name === "name" && {
+      slug: slugify(value),
+    }),
+  }));
+}
 
   async function handleSubmit(event) {
     event.preventDefault();
@@ -75,14 +79,12 @@ export default function FestivalCreatePage() {
             </label>
 
             <input
-              type="text"
-              name="slug"
-              value={formData.slug}
-              onChange={handleChange}
-              required
-              className="w-full rounded-lg bg-slate-800 p-3"
-              placeholder="rock-am-ring-2026"
-            />
+  type="text"
+  name="slug"
+  value={formData.slug}
+  readOnly
+  className="w-full rounded-lg bg-slate-700 p-3 text-slate-400"
+/>
           </div>
 
           <div>

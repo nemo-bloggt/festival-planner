@@ -59,3 +59,11 @@ export async function createFestival(data) {
     created_by: pb.authStore.model.id,
   });
 }
+
+export async function updateFestival(festivalId, data) {
+  return await pb.collection("festivals").update(festivalId, data);
+}
+
+export async function deleteFestival(festivalId) {
+  return await pb.collection("festivals").delete(festivalId);
+}
