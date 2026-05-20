@@ -5,12 +5,17 @@ import CarpoolsList from "../carpools/CarpoolsList";
 import { buildGroupData } from "../../utils/groupData";
 import SectionTitle from "../ui/SectionTitle";
 import EmptyState from "../ui/EmptyState";
+import MemberForm from "../groups/MemberForm";
 
 export default function FestivalGroupsSection({
   groups,
   members,
   packingItems,
   carpools,
+  people,
+  onUpdateGroup,
+  onDeleteGroup,
+  onAddMember,
 }) {
   return (
     <section className="mt-8 space-y-6">
@@ -31,9 +36,18 @@ export default function FestivalGroupsSection({
         );
 
         return (
-          <GroupCard key={group.id} group={group}>
+          <GroupCard
+  key={group.id}
+  group={group}
+  onUpdateGroup={onUpdateGroup}
+  onDeleteGroup={onDeleteGroup}
+>
             <div className="mt-5 grid gap-5 md:grid-cols-2">
               <MembersList members={groupData.members} />
+              <MemberForm
+                people={people}
+                onAddMember={(memberData) => onAddMember(group.id, memberData)}
+              />
               <PackingList items={groupData.packingItems} />
             </div>
 

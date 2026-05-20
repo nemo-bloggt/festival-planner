@@ -5,8 +5,16 @@ import { loadFestivalBySlug } from "../services/festivalService";
 import FestivalGroupsSection from "../components/festivals/FestivalGroupsSection";
 import FestivalDetailHeader from "../components/festivals/FestivalDetailHeader";
 import LoadingSpinner from "../components/ui/LoadingSpinner";
-import { createGroup } from "../services/groupService";
 import GroupForm from "../components/groups/GroupForm";
+import {
+  createGroup,
+  updateGroup,
+  deleteGroup,
+} from "../services/groupService";
+import {
+  loadPeople,
+  createGroupMember,
+} from "../services/memberService";
 
 
 export default function FestivalDetailPage() {
@@ -15,12 +23,15 @@ export default function FestivalDetailPage() {
   const [festivalData, setFestivalData] = useState(null);
 const [loading, setLoading] = useState(true);
 const [error, setError] = useState(null);
+const [people, setPeople] = useState([]);
 
   useEffect(() => {
     const loadData = async () => {
       try {
         const data = await loadFestivalBySlug(festivalSlug);
         setFestivalData(data);
+        const peopleRecords = await loadPeople();
+setPeople(peopleRecords);
       } catch (error) {
   console.error("Fehler beim Laden der Festivaldetails:", error);
   setError("Festival konnte nicht geladen werden.");
@@ -83,14 +94,51 @@ const [error, setError] = useState(null);
       festival: festivalData.festival.id,
     });
 
-    const updatedData = await loadFestivalBySlug(festivalSlug);
-    setFestivalData(updatedData);
+    await refreshFestivalData();
   } catch (error) {
     console.error("Fehler beim Anlegen der Gruppe:", error);
     alert("Gruppe konnte nicht angelegt werden.");
   }
 }
 
+async function refreshFestivalData() {
+  const updatedData = await loadFestivalBySlug(festivalSlug);
+  setFestivalData(updatedData);
+}
+
+async function handleUpdateGroup(groupId, groupData) {
+  try {
+    await updateGroup(groupId, groupData);
+    await refreshFestivalData();
+  } catch (error) {
+    console.error("Fehler beim Aktualisieren der Gruppe:", error);
+    alert("Gruppe konnte nicht aktualisiert werden.");
+  }
+}
+
+async function handleDeleteGroup(groupId) {
+  try {
+    await deleteGroup(groupId);
+    await refreshFestivalData();
+  } catch (error) {
+    console.error("Fehler beim Löschen der Gruppe:", error);
+    alert("Gruppe konnte nicht gelöscht werden.");
+  }
+}
+
+async function handleAddMember(groupId, memberData) {
+  try {
+    await createGroupMember({
+      ...memberData,
+      group: groupId,
+    });
+
+    await refreshFestivalData();
+  } catch (error) {
+    console.error("Fehler beim Hinzufügen des Mitglieds:", error);
+    alert("Mitglied konnte nicht hinzugefügt werden.");
+  }
+}
   const { festival, groups, members, packingItems, carpools } = festivalData;
 
   return (
@@ -112,6 +160,10 @@ const [error, setError] = useState(null);
   members={members}
   packingItems={packingItems}
   carpools={carpools}
+  people={people}
+  onUpdateGroup={handleUpdateGroup}
+  onDeleteGroup={handleDeleteGroup}
+  onAddMember={handleAddMember}
 />
       </div>
     </main>
