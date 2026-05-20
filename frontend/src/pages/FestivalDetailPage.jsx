@@ -14,6 +14,7 @@ import {
 import {
   loadPeople,
   createGroupMember,
+  deleteGroupMember,
 } from "../services/memberService";
 
 
@@ -101,6 +102,16 @@ setPeople(peopleRecords);
   }
 }
 
+async function handleRemoveMember(memberId) {
+  try {
+    await deleteGroupMember(memberId);
+    await refreshFestivalData();
+  } catch (error) {
+    console.error("Fehler beim Entfernen des Mitglieds:", error);
+    alert("Mitglied konnte nicht entfernt werden.");
+  }
+}
+
 async function refreshFestivalData() {
   const updatedData = await loadFestivalBySlug(festivalSlug);
   setFestivalData(updatedData);
@@ -164,6 +175,7 @@ async function handleAddMember(groupId, memberData) {
   onUpdateGroup={handleUpdateGroup}
   onDeleteGroup={handleDeleteGroup}
   onAddMember={handleAddMember}
+  onRemoveMember={handleRemoveMember}
 />
       </div>
     </main>
