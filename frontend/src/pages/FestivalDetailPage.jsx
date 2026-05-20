@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 
-import { loadFestivalById } from "../services/festivalService";
+import { loadFestivalBySlug } from "../services/festivalService";
 import FestivalGroupsSection from "../components/festivals/FestivalGroupsSection";
 import FestivalDetailHeader from "../components/festivals/FestivalDetailHeader";
 import LoadingSpinner from "../components/ui/LoadingSpinner";
 
 export default function FestivalDetailPage() {
-  const { festivalId } = useParams();
+  const { festivalSlug } = useParams();
 
   const [festivalData, setFestivalData] = useState(null);
 const [loading, setLoading] = useState(true);
@@ -16,7 +16,7 @@ const [error, setError] = useState(null);
   useEffect(() => {
     const loadData = async () => {
       try {
-        const data = await loadFestivalById(festivalId);
+        const data = await loadFestivalBySlug(festivalSlug);
         setFestivalData(data);
       } catch (error) {
   console.error("Fehler beim Laden der Festivaldetails:", error);
@@ -27,7 +27,7 @@ const [error, setError] = useState(null);
     };
 
     loadData();
-  }, [festivalId]);
+  }, [festivalSlug]);
 
   if (loading) {
   return (
@@ -50,7 +50,7 @@ const [error, setError] = useState(null);
         </h1>
 
         <p className="mt-2 text-red-200">
-          Prüfe bitte, ob die Festival-ID korrekt ist.
+          Prüfe bitte, ob der Festival-Slug korrekt ist.
         </p>
       </div>
     </main>

@@ -26,8 +26,8 @@ export default function AppRouter() {
           >
             <Route path="/" element={<DashboardPage />} />
             <Route path="/festivals/new" element={<FestivalCreatePage />} />
-            <Route path="/festivals/:festivalId" element={<FestivalDetailPage />} />
-            <Route path="/festivals/:festivalId/edit" element={<FestivalEditPage />} />
+            <Route path="/festivals/:festivalSlug" element={<FestivalDetailPage />} />
+            <Route path="/festivals/:festivalSlug/edit" element={<FestivalEditPage />} />
             <Route path="/admin" element={<AdminPage />} />
           </Route>
         </Routes>

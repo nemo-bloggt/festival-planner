@@ -9,6 +9,20 @@ export async function loadFestivals() {
 export async function loadFestivalById(festivalId) {
   const festival = await pb.collection("festivals").getOne(festivalId);
 
+  return await loadFestivalRelations(festival);
+}
+
+export async function loadFestivalBySlug(slug) {
+  const festival = await pb.collection("festivals").getFirstListItem(
+    `slug = "${slug}"`
+  );
+
+  return await loadFestivalRelations(festival);
+}
+
+async function loadFestivalRelations(festival) {
+  const festivalId = festival.id;
+
   const groups = await pb.collection("groups").getFullList({
     filter: `festival = "${festivalId}"`,
     sort: "name",

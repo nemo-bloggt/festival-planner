@@ -3,15 +3,17 @@ import { useNavigate, useParams } from "react-router-dom";
 
 import { slugify } from "../utils/slugify";
 import {
-  loadFestivalById,
+  loadFestivalBySlug,
   updateFestival,
   deleteFestival,
 } from "../services/festivalService";
 import FestivalForm from "../components/festivals/FestivalForm";
 
 export default function FestivalEditPage() {
-  const { festivalId } = useParams();
+  const { festivalSlug } = useParams();
   const navigate = useNavigate();
+
+  const [festivalId, setFestivalId] = useState(null);
 
   const [formData, setFormData] = useState({
     name: "",
@@ -26,10 +28,11 @@ export default function FestivalEditPage() {
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
-    async function loadData() {
-      try {
-        const data = await loadFestivalById(festivalId);
+  async function loadData() {
+    try {
+      const data = await loadFestivalBySlug(festivalSlug);
 
+      setFestivalId(data.festival.id);
         setFormData({
           name: data.festival.name || "",
           slug: data.festival.slug || "",
@@ -47,7 +50,7 @@ export default function FestivalEditPage() {
     }
 
     loadData();
-  }, [festivalId]);
+  }, [festivalSlug]);
 
   function handleChange(event) {
     const { name, value } = event.target;
@@ -63,13 +66,14 @@ export default function FestivalEditPage() {
 
   async function handleSubmit(event) {
     event.preventDefault();
+    if (!festivalId) return;
 
     try {
       setSaving(true);
 
       await updateFestival(festivalId, formData);
 
-      navigate(`/festivals/${festivalId}`);
+      navigate(`/festivals/${formData.slug}`);
     } catch (error) {
       console.error("Fehler beim Speichern:", error);
       alert("Festival konnte nicht gespeichert werden.");
@@ -107,7 +111,7 @@ export default function FestivalEditPage() {
   formData={formData}
   onChange={handleChange}
   onSubmit={handleSubmit}
-  loading={saving}
+  loading={saving || !festivalId}
   submitLabel="Änderungen speichern"
   loadingLabel="Speichert..."
 >

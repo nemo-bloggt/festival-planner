@@ -19,7 +19,7 @@ function FestivalCard({ festival, children }) {
 
         <div className="flex flex-col gap-2">
           <Link
-            to={`/festivals/${festival.id}`}
+            to={`/festivals/${festival.slug}`}
             className="inline-flex rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-500"
           >
             Details öffnen

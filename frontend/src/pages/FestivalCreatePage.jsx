@@ -39,7 +39,7 @@ export default function FestivalCreatePage() {
 
       const createdFestival = await createFestival(formData);
 
-      navigate(`/festivals/${createdFestival.id}`);
+      navigate(`/festivals/${createdFestival.slug}`);
     } catch (error) {
       console.error("Fehler beim Erstellen:", error);
       alert("Festival konnte nicht erstellt werden.");
