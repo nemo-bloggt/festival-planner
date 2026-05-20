@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 
 import { createFestival } from "../services/festivalService";
 import { slugify } from "../utils/slugify";
+import FestivalForm from "../components/festivals/FestivalForm";
 
 export default function FestivalCreatePage() {
   const navigate = useNavigate();
@@ -54,104 +55,14 @@ export default function FestivalCreatePage() {
           Festival erstellen
         </h1>
 
-        <form
-          onSubmit={handleSubmit}
-          className="space-y-4 rounded-xl bg-slate-900 p-6"
-        >
-          <div>
-            <label className="mb-1 block text-sm">
-              Festivalname
-            </label>
-
-            <input
-              type="text"
-              name="name"
-              value={formData.name}
-              onChange={handleChange}
-              required
-              className="w-full rounded-lg bg-slate-800 p-3"
-            />
-          </div>
-
-          <div>
-            <label className="mb-1 block text-sm">
-              Slug
-            </label>
-
-            <input
-  type="text"
-  name="slug"
-  value={formData.slug}
-  readOnly
-  className="w-full rounded-lg bg-slate-700 p-3 text-slate-400"
+        <FestivalForm
+  formData={formData}
+  onChange={handleChange}
+  onSubmit={handleSubmit}
+  loading={loading}
+  submitLabel="Festival erstellen"
+  loadingLabel="Erstelle..."
 />
-          </div>
-
-          <div>
-            <label className="mb-1 block text-sm">
-              Startdatum
-            </label>
-
-            <input
-              type="date"
-              name="start_date"
-              value={formData.start_date}
-              onChange={handleChange}
-              required
-              className="w-full rounded-lg bg-slate-800 p-3"
-            />
-          </div>
-
-          <div>
-            <label className="mb-1 block text-sm">
-              Enddatum
-            </label>
-
-            <input
-              type="date"
-              name="end_date"
-              value={formData.end_date}
-              onChange={handleChange}
-              className="w-full rounded-lg bg-slate-800 p-3"
-            />
-          </div>
-
-          <div>
-            <label className="mb-1 block text-sm">
-              Ort
-            </label>
-
-            <input
-              type="text"
-              name="location"
-              value={formData.location}
-              onChange={handleChange}
-              className="w-full rounded-lg bg-slate-800 p-3"
-            />
-          </div>
-
-          <div>
-            <label className="mb-1 block text-sm">
-              Website
-            </label>
-
-            <input
-              type="url"
-              name="website"
-              value={formData.website}
-              onChange={handleChange}
-              className="w-full rounded-lg bg-slate-800 p-3"
-            />
-          </div>
-
-          <button
-            type="submit"
-            disabled={loading}
-            className="rounded-lg bg-indigo-600 px-4 py-2 font-medium hover:bg-indigo-500 disabled:opacity-50"
-          >
-            {loading ? "Erstelle..." : "Festival erstellen"}
-          </button>
-        </form>
       </div>
     </main>
   );

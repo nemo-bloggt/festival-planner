@@ -7,6 +7,7 @@ import {
   updateFestival,
   deleteFestival,
 } from "../services/festivalService";
+import FestivalForm from "../components/festivals/FestivalForm";
 
 export default function FestivalEditPage() {
   const { festivalId } = useParams();
@@ -102,77 +103,22 @@ export default function FestivalEditPage() {
       <div className="mx-auto max-w-2xl">
         <h1 className="mb-6 text-3xl font-bold">Festival bearbeiten</h1>
 
-        <form
-          onSubmit={handleSubmit}
-          className="space-y-4 rounded-xl bg-slate-900 p-6"
-        >
-          <input
-            type="text"
-            name="name"
-            value={formData.name}
-            onChange={handleChange}
-            required
-            className="w-full rounded-lg bg-slate-800 p-3"
-          />
-
-          <input
-            type="text"
-            name="slug"
-            value={formData.slug}
-            readOnly
-            className="w-full rounded-lg bg-slate-700 p-3 text-slate-400"
-          />
-
-          <input
-            type="date"
-            name="start_date"
-            value={formData.start_date}
-            onChange={handleChange}
-            required
-            className="w-full rounded-lg bg-slate-800 p-3"
-          />
-
-          <input
-            type="date"
-            name="end_date"
-            value={formData.end_date}
-            onChange={handleChange}
-            className="w-full rounded-lg bg-slate-800 p-3"
-          />
-
-          <input
-            type="text"
-            name="location"
-            value={formData.location}
-            onChange={handleChange}
-            className="w-full rounded-lg bg-slate-800 p-3"
-          />
-
-          <input
-            type="url"
-            name="website"
-            value={formData.website}
-            onChange={handleChange}
-            className="w-full rounded-lg bg-slate-800 p-3"
-          />
-
-          <button
-            type="submit"
-            disabled={saving}
-            className="rounded-lg bg-indigo-600 px-4 py-2 font-medium hover:bg-indigo-500 disabled:opacity-50"
-          >
-            {saving ? "Speichert..." : "Änderungen speichern"}
-          </button>
-
-          <button
-  type="button"
-  onClick={handleDelete}
-  className="rounded-lg bg-red-600 px-4 py-2 font-medium hover:bg-red-500"
+        <FestivalForm
+  formData={formData}
+  onChange={handleChange}
+  onSubmit={handleSubmit}
+  loading={saving}
+  submitLabel="Änderungen speichern"
+  loadingLabel="Speichert..."
 >
-  Festival löschen
-</button>
-
-        </form>
+  <button
+    type="button"
+    onClick={handleDelete}
+    className="rounded-lg bg-red-600 px-4 py-2 font-medium hover:bg-red-500"
+  >
+    Festival löschen
+  </button>
+</FestivalForm>
       </div>
     </main>
   );
