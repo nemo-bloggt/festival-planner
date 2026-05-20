@@ -5,6 +5,9 @@ import { loadFestivalBySlug } from "../services/festivalService";
 import FestivalGroupsSection from "../components/festivals/FestivalGroupsSection";
 import FestivalDetailHeader from "../components/festivals/FestivalDetailHeader";
 import LoadingSpinner from "../components/ui/LoadingSpinner";
+import { createGroup } from "../services/groupService";
+import GroupForm from "../components/groups/GroupForm";
+
 
 export default function FestivalDetailPage() {
   const { festivalSlug } = useParams();
@@ -71,6 +74,23 @@ const [error, setError] = useState(null);
     );
   }
 
+  async function handleCreateGroup(groupData) {
+  if (!festivalData?.festival?.id) return;
+
+  try {
+    await createGroup({
+      ...groupData,
+      festival: festivalData.festival.id,
+    });
+
+    const updatedData = await loadFestivalBySlug(festivalSlug);
+    setFestivalData(updatedData);
+  } catch (error) {
+    console.error("Fehler beim Anlegen der Gruppe:", error);
+    alert("Gruppe konnte nicht angelegt werden.");
+  }
+}
+
   const { festival, groups, members, packingItems, carpools } = festivalData;
 
   return (
@@ -80,10 +100,14 @@ const [error, setError] = useState(null);
           ← Zurück zur Übersicht
         </Link>
 
-        <FestivalDetailHeader festival={festival} />
+        
         
 
-    <FestivalGroupsSection
+<FestivalDetailHeader festival={festival} />
+
+<GroupForm onCreateGroup={handleCreateGroup} />
+
+<FestivalGroupsSection
   groups={groups}
   members={members}
   packingItems={packingItems}
