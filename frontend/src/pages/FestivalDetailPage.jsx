@@ -18,6 +18,7 @@ import {
 } from "../services/memberService";
 
 
+
 export default function FestivalDetailPage() {
   const { festivalSlug } = useParams();
 

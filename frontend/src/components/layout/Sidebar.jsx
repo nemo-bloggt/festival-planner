@@ -1,4 +1,15 @@
-import { Link } from "react-router-dom";
+import { NavLink } from "react-router-dom";
+
+function navClass({ isActive }) {
+  return `
+    block rounded-lg px-3 py-2 transition
+    ${
+      isActive
+        ? "bg-slate-800 text-white"
+        : "text-slate-300 hover:bg-slate-800 hover:text-white"
+    }
+  `;
+}
 
 export default function Sidebar() {
   return (
@@ -9,19 +20,17 @@ export default function Sidebar() {
       </div>
 
       <nav className="space-y-2">
-        <Link
-          to="/"
-          className="block rounded-lg px-3 py-2 text-slate-300 hover:bg-slate-800 hover:text-white"
-        >
+        <NavLink to="/" className={navClass}>
           Dashboard
-        </Link>
+        </NavLink>
 
-        <Link
-          to="/festivals/new"
-          className="block rounded-lg px-3 py-2 text-slate-300 hover:bg-slate-800 hover:text-white"
-        >
+        <NavLink to="/festivals/new" className={navClass}>
           Festival erstellen
-        </Link>
+        </NavLink>
+
+        <NavLink to="/people" className={navClass}>
+          Personen
+        </NavLink>
       </nav>
     </aside>
   );

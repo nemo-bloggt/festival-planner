@@ -12,7 +12,6 @@ export default function FestivalGroupsSection({
   members,
   packingItems,
   carpools,
-  people,
   onUpdateGroup,
   onDeleteGroup,
   onAddMember,
@@ -21,14 +20,15 @@ export default function FestivalGroupsSection({
   return (
     <section className="mt-8 space-y-6">
       <SectionTitle>Gruppen</SectionTitle>
-    {groups.length === 0 && (
-        <EmptyState
-            title="Keine Gruppen vorhanden"
-            description="Für dieses Festival wurden noch keine Gruppen angelegt."
-  />
-)}
 
-    {groups.map((group) => {
+      {groups.length === 0 && (
+        <EmptyState
+          title="Keine Gruppen vorhanden"
+          description="Für dieses Festival wurden noch keine Gruppen angelegt."
+        />
+      )}
+
+      {groups.map((group) => {
         const groupData = buildGroupData(
           group,
           members,
@@ -38,24 +38,27 @@ export default function FestivalGroupsSection({
 
         return (
           <GroupCard
-  key={group.id}
-  group={group}
-  onUpdateGroup={onUpdateGroup}
-  onDeleteGroup={onDeleteGroup}
->
-            <div className="mt-5 grid gap-5 md:grid-cols-2">
-              <MembersList 
-              members={groupData.members} 
-              onRemoveMember={onRemoveMember}
+            key={group.id}
+            group={group}
+            onUpdateGroup={onUpdateGroup}
+            onDeleteGroup={onDeleteGroup}
+          >
+            <div className="mt-5 space-y-5">
+              <MembersList
+                members={groupData.members || []}
+                onRemoveMember={onRemoveMember}
               />
-              <MemberForm
-                people={people}
-                onAddMember={(memberData) => onAddMember(group.id, memberData)}
-              />
-              <PackingList items={groupData.packingItems} />
-            </div>
 
-            <CarpoolsList carpools={groupData.carpools} />
+              <MemberForm
+                onAddMember={(memberData) =>
+                  onAddMember(group.id, memberData)
+                }
+              />
+
+              <PackingList items={groupData.packingItems || []} />
+
+              <CarpoolsList carpools={groupData.carpools || []} />
+            </div>
           </GroupCard>
         );
       })}

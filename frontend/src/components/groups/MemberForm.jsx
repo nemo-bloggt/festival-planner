@@ -1,6 +1,7 @@
 import { useState } from "react";
+import PersonSelect from "../people/PersonSelect";
 
-export default function MemberForm({ people, onAddMember }) {
+export default function MemberForm({ onAddMember }) {
   const [personId, setPersonId] = useState("");
   const [role, setRole] = useState("member");
   const [saving, setSaving] = useState(false);
@@ -26,35 +27,26 @@ export default function MemberForm({ people, onAddMember }) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="mt-4 flex gap-3">
-      <select
-        value={personId}
-        onChange={(event) => setPersonId(event.target.value)}
-        className="flex-1 rounded-lg bg-slate-800 p-3 text-slate-100"
-      >
-        <option value="">Person auswählen</option>
-
-        {people.map((person) => (
-          <option key={person.id} value={person.id}>
-            {person.name}
-          </option>
-        ))}
-      </select>
+   <form
+  onSubmit={handleSubmit}
+  className="mt-4 flex flex-wrap items-center gap-3"
+>
+      <PersonSelect value={personId} onChange={setPersonId} />
 
       <select
-        value={role}
-        onChange={(event) => setRole(event.target.value)}
-        className="rounded-lg bg-slate-800 p-3 text-slate-100"
-      >
+  value={role}
+  onChange={(event) => setRole(event.target.value)}
+  className="h-11 rounded-lg bg-slate-800 px-3 text-slate-100"
+>
         <option value="member">Member</option>
         <option value="admin">Admin</option>
       </select>
 
       <button
-        type="submit"
-        disabled={saving || !personId}
-        className="rounded-lg bg-emerald-600 px-4 py-2 font-medium hover:bg-emerald-500 disabled:opacity-50"
-      >
+  type="submit"
+  disabled={saving || !personId}
+  className="h-11 rounded-lg bg-emerald-600 px-4 font-medium hover:bg-emerald-500 disabled:opacity-50"
+>
         {saving ? "Speichert..." : "Hinzufügen"}
       </button>
     </form>
