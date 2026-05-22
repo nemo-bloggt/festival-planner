@@ -44,10 +44,11 @@ export default function FestivalGroupsSection({
             onDeleteGroup={onDeleteGroup}
           >
             <div className="mt-5 space-y-5">
+             
               <MembersList
-                members={groupData.members || []}
-                onRemoveMember={onRemoveMember}
-              />
+  members={groupData.members}
+  onRemoveMember={onRemoveMember}
+/>
 
               <MemberForm
                 onAddMember={(memberData) =>

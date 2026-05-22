@@ -26,3 +26,4 @@ export async function updateFestivalMemberRole(id, role) {
 export async function removeFestivalMember(id) {
   return await pb.collection("festival_members").delete(id);
 }
+

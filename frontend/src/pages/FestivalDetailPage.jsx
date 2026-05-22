@@ -21,11 +21,13 @@ import {
   addFestivalMember,
   loadFestivalMembers,
   removeFestivalMember,
+  updateFestivalMemberRole,
 } from "../services/festivalMemberService";
 import {
   getCurrentPersonId,
   isFestivalAdmin,
 } from "../utils/authHelpers";
+
 
 
 
@@ -163,6 +165,11 @@ async function handleRemoveMember(memberId) {
     console.error("Fehler beim Entfernen des Mitglieds:", error);
     alert("Mitglied konnte nicht entfernt werden.");
   }
+}
+
+async function handleUpdateFestivalMemberRole(memberId, role) {
+  await updateFestivalMemberRole(memberId, role);
+  await refreshFestivalMembers();
 }
 
 async function refreshFestivalData() {

@@ -1,6 +1,11 @@
 import { getPersonName } from "../../utils/formatters";
 
-function MembersList({ members, onRemoveMember }) {
+function MembersList({
+  members,
+  onRemoveMember,
+  canManageFestival = false,
+  onUpdateRole,
+}) {
   return (
     <section>
       <h5 className="mb-3 text-sm font-semibold uppercase tracking-wider text-slate-400">
@@ -13,25 +18,38 @@ function MembersList({ members, onRemoveMember }) {
         <ul className="space-y-2">
           {members.map((member) => (
             <li
-  key={member.id}
-  className="flex items-center justify-between rounded-xl bg-slate-900 px-4 py-3"
->
-  <span>{getPersonName(member.expand?.person)}</span>
+              key={member.id}
+              className="flex items-center justify-between rounded-xl bg-slate-900 px-4 py-3"
+            >
+              <span>{getPersonName(member.expand?.person)}</span>
 
-  <div className="flex items-center gap-2">
-    <span className="rounded-full bg-slate-800 px-3 py-1 text-xs text-slate-300">
-      {member.role}
-    </span>
+              <div className="flex items-center gap-2">
+                {canManageFestival ? (
+                  <select
+                    value={member.role}
+                    onChange={(e) => onUpdateRole(member.id, e.target.value)}
+                    className="rounded-lg bg-slate-800 px-3 py-1 text-xs text-slate-100"
+                  >
+                    <option value="member">Mitglied</option>
+                    <option value="festival_admin">Festival Admin</option>
+                  </select>
+                ) : (
+                  <span className="rounded-full bg-slate-800 px-3 py-1 text-xs text-slate-300">
+                    {member.role}
+                  </span>
+                )}
 
-    <button
-      type="button"
-      onClick={() => onRemoveMember(member.id)}
-      className="rounded-lg bg-red-600 px-3 py-1 text-xs hover:bg-red-500"
-    >
-      Entfernen
-    </button>
-  </div>
-</li>
+                {canManageFestival && (
+                  <button
+                    type="button"
+                    onClick={() => onRemoveMember(member.id)}
+                    className="rounded-lg bg-red-600 px-3 py-1 text-xs hover:bg-red-500"
+                  >
+                    Entfernen
+                  </button>
+                )}
+              </div>
+            </li>
           ))}
         </ul>
       )}
