@@ -10,6 +10,7 @@ export default function PersonSelect({
   const [search, setSearch] = useState("");
   const [open, setOpen] = useState(false);
   const [creating, setCreating] = useState(false);
+  const [highlightedIndex, setHighlightedIndex] = useState(0);
   const [newPerson, setNewPerson] = useState({
     name: "",
     email: "",
@@ -48,6 +49,8 @@ export default function PersonSelect({
   const filteredPeople = useMemo(() => {
     const query = search.toLowerCase().trim();
 
+    
+
     if (!query) return people;
 
     return people.filter((person) => {
@@ -63,12 +66,50 @@ export default function PersonSelect({
     });
   }, [people, search]);
 
+  useEffect(() => {
+  setHighlightedIndex(0);
+}, [search, open]);
+
   function handleSelect(person) {
     onChange(person.id);
     setSearch("");
     setOpen(false);
     setCreating(false);
   }
+
+  function handleKeyDown(event) {
+  if (!open || creating) return;
+
+  if (event.key === "ArrowDown") {
+    event.preventDefault();
+
+    setHighlightedIndex((current) =>
+      current < filteredPeople.length - 1 ? current + 1 : current
+    );
+  }
+
+  if (event.key === "ArrowUp") {
+    event.preventDefault();
+
+    setHighlightedIndex((current) =>
+      current > 0 ? current - 1 : 0
+    );
+  }
+
+  if (event.key === "Enter") {
+    event.preventDefault();
+
+    const person = filteredPeople[highlightedIndex];
+
+    if (person) {
+      handleSelect(person);
+    }
+  }
+
+  if (event.key === "Escape") {
+    setOpen(false);
+  }
+}
 
   async function handleCreatePerson() {;
 
@@ -108,6 +149,7 @@ export default function PersonSelect({
               <input
                 value={search}
                 onChange={(event) => setSearch(event.target.value)}
+                onKeyDown={handleKeyDown}
                 placeholder={placeholder}
                 className="mb-2 w-full rounded-lg bg-slate-800 px-3 py-2 text-sm text-slate-100 outline-none ring-1 ring-slate-700 focus:ring-slate-500"
                 autoFocus
@@ -119,12 +161,16 @@ export default function PersonSelect({
                     Keine Person gefunden.
                   </p>
                 ) : (
-                  filteredPeople.map((person) => (
+                  filteredPeople.map((person, index) => (
                     <button
                       key={person.id}
                       type="button"
                       onClick={() => handleSelect(person)}
-                      className="block w-full rounded-lg px-3 py-2 text-left hover:bg-slate-800"
+                      className={`block w-full rounded-lg px-3 py-2 text-left ${
+                      index === highlightedIndex
+                      ? "bg-slate-800"
+                      : "hover:bg-slate-800"
+                      }`}
                     >
                       <p className="text-sm font-medium text-slate-100">
                         {person.name}

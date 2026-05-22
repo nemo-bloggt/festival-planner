@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 
 import AppHeader from "../components/AppHeader";
 import FestivalCard from "../components/festivals/FestivalCard";
-import { loadFestivals } from "../services/festivalService";
+import { loadMyFestivals } from "../services/festivalService";
 import { Link } from "react-router-dom";
 import EmptyState from "../components/ui/EmptyState";
 
@@ -12,7 +12,7 @@ export default function DashboardPage() {
   useEffect(() => {
     const loadData = async () => {
       try {
-        const festivalRecords = await loadFestivals();
+        const festivalRecords = await loadMyFestivals();
         setFestivals(festivalRecords);
       } catch (error) {
         console.error("Fehler beim Laden:", error);

@@ -1,9 +1,36 @@
 import pb from "../lib/pocketbase";
+import { getCurrentPersonId } from "../utils/authHelpers";
 
 export async function loadFestivals() {
   return await pb.collection("festivals").getFullList({
     sort: "-created",
   });
+}
+
+export async function loadMyFestivals() {
+  const currentPersonId = getCurrentPersonId();
+
+  console.log("currentPersonId:", currentPersonId);
+
+  if (!currentPersonId) {
+    return [];
+  }
+
+  const memberships = await pb.collection("festival_members").getFullList({
+    filter: `person = "${currentPersonId}"`,
+    expand: "festival",
+    sort: "-created",
+  });
+
+  console.log("memberships:", memberships);
+  console.log(
+    "expanded festivals:",
+    memberships.map((membership) => membership.expand?.festival)
+  );
+
+  return memberships
+    .map((membership) => membership.expand?.festival)
+    .filter(Boolean);
 }
 
 export async function loadFestivalById(festivalId) {

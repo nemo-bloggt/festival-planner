@@ -8,6 +8,11 @@ import {
   deleteFestival,
 } from "../services/festivalService";
 import FestivalForm from "../components/festivals/FestivalForm";
+import { loadFestivalMembers } from "../services/festivalMemberService";
+import {
+  getCurrentPersonId,
+  isFestivalAdmin,
+} from "../utils/authHelpers";
 
 export default function FestivalEditPage() {
   const { festivalSlug } = useParams();
@@ -26,11 +31,28 @@ export default function FestivalEditPage() {
 
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [canEditFestival, setCanEditFestival] = useState(false);
 
   useEffect(() => {
   async function loadData() {
     try {
       const data = await loadFestivalBySlug(festivalSlug);
+
+      const festivalMembers = await loadFestivalMembers(data.festival.id);
+const currentPersonId = getCurrentPersonId();
+
+const userIsFestivalAdmin = isFestivalAdmin(
+  festivalMembers,
+  currentPersonId
+);
+
+if (!userIsFestivalAdmin) {
+  alert("Du hast keine Berechtigung, dieses Festival zu bearbeiten.");
+  navigate(`/festivals/${festivalSlug}`);
+  return;
+}
+
+setCanEditFestival(true);
 
       setFestivalId(data.festival.id);
         setFormData({
@@ -101,6 +123,10 @@ export default function FestivalEditPage() {
   if (loading) {
     return <p className="p-6 text-slate-100">Lade Festival...</p>;
   }
+
+if (!canEditFestival) {
+  return null;
+}
 
   return (
     <main className="min-h-screen bg-slate-950 p-6 text-slate-100">

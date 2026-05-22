@@ -16,6 +16,17 @@ import {
   createGroupMember,
   deleteGroupMember,
 } from "../services/memberService";
+import PersonSelect from "../components/people/PersonSelect";
+import {
+  addFestivalMember,
+  loadFestivalMembers,
+  removeFestivalMember,
+} from "../services/festivalMemberService";
+import {
+  getCurrentPersonId,
+  isFestivalAdmin,
+} from "../utils/authHelpers";
+
 
 
 
@@ -26,6 +37,17 @@ export default function FestivalDetailPage() {
 const [loading, setLoading] = useState(true);
 const [error, setError] = useState(null);
 const [people, setPeople] = useState([]);
+const [festivalMembers, setFestivalMembers] = useState([]);
+const [newFestivalMemberPersonId, setNewFestivalMemberPersonId] = useState("");
+const [newFestivalMemberRole, setNewFestivalMemberRole] = useState("member");
+
+
+const currentPersonId = getCurrentPersonId();
+
+const currentUserIsFestivalAdmin = isFestivalAdmin(
+  festivalMembers,
+  currentPersonId
+);
 
   useEffect(() => {
     const loadData = async () => {
@@ -34,6 +56,8 @@ const [people, setPeople] = useState([]);
         setFestivalData(data);
         const peopleRecords = await loadPeople();
 setPeople(peopleRecords);
+        const members = await loadFestivalMembers(data.festival.id);
+        setFestivalMembers(members);
       } catch (error) {
   console.error("Fehler beim Laden der Festivaldetails:", error);
   setError("Festival konnte nicht geladen werden.");
@@ -103,6 +127,34 @@ setPeople(peopleRecords);
   }
 }
 
+async function refreshFestivalMembers() {
+  if (!festivalData?.festival?.id) return;
+
+  const members = await loadFestivalMembers(festivalData.festival.id);
+  setFestivalMembers(members);
+}
+
+async function handleAddFestivalMember() {
+  if (!festivalData?.festival?.id) return;
+  if (!newFestivalMemberPersonId) return;
+
+  try {
+    await addFestivalMember({
+      festival: festivalData.festival.id,
+      person: newFestivalMemberPersonId,
+      role: newFestivalMemberRole,
+    });
+
+    setNewFestivalMemberPersonId("");
+    setNewFestivalMemberRole("member");
+
+    await refreshFestivalMembers();
+  } catch (error) {
+    console.error("Fehler beim Hinzufügen des Festival-Mitglieds:", error);
+    alert("Festival-Mitglied konnte nicht hinzugefügt werden.");
+  }
+}
+
 async function handleRemoveMember(memberId) {
   try {
     await deleteGroupMember(memberId);
@@ -151,6 +203,17 @@ async function handleAddMember(groupId, memberData) {
     alert("Mitglied konnte nicht hinzugefügt werden.");
   }
 }
+
+async function handleRemoveFestivalMember(memberId) {
+  try {
+    await removeFestivalMember(memberId);
+
+    await refreshFestivalMembers();
+  } catch (error) {
+    console.error("Fehler beim Entfernen des Festival-Mitglieds:", error);
+    alert("Festival-Mitglied konnte nicht entfernt werden.");
+  }
+}
   const { festival, groups, members, packingItems, carpools } = festivalData;
 
   return (
@@ -163,9 +226,90 @@ async function handleAddMember(groupId, memberData) {
         
         
 
-<FestivalDetailHeader festival={festival} />
+<FestivalDetailHeader
+  festival={festival}
+  canManageFestival={currentUserIsFestivalAdmin}
+/>
 
-<GroupForm onCreateGroup={handleCreateGroup} />
+<p className="mt-2 text-xs text-slate-500">
+  Aktuelle Person-ID: {currentPersonId || "nicht verknüpft"}
+</p>
+<p className="text-xs text-slate-500">
+  Festival Admin: {currentUserIsFestivalAdmin ? "JA" : "NEIN"}
+</p>
+
+<section className="mt-8 rounded-2xl bg-slate-900 p-6">
+  <h2 className="text-xl font-semibold text-slate-100">
+    Festival-Mitglieder
+  </h2>
+
+  {currentUserIsFestivalAdmin && (
+  <div className="mt-4 flex flex-col gap-3 rounded-xl bg-slate-800 p-4 md:flex-row md:items-center">
+  <PersonSelect
+    value={newFestivalMemberPersonId}
+    onChange={setNewFestivalMemberPersonId}
+    placeholder="Person als Festival-Mitglied suchen..."
+  />
+  
+
+  <select
+    value={newFestivalMemberRole}
+    onChange={(event) => setNewFestivalMemberRole(event.target.value)}
+    className="rounded-xl bg-slate-900 px-3 py-2 text-sm text-slate-100 ring-1 ring-slate-700"
+  >
+    <option value="member">member</option>
+    <option value="festival_admin">festival_admin</option>
+  </select>
+
+  <button
+    type="button"
+    onClick={handleAddFestivalMember}
+    className="rounded-xl bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-500"
+  >
+    Hinzufügen
+  </button>
+</div>
+)}
+
+  <div className="mt-4 space-y-2">
+    {festivalMembers.length === 0 ? (
+      <p className="text-sm text-slate-400">
+        Noch keine Festival-Mitglieder angelegt.
+      </p>
+    ) : (
+      festivalMembers.map((member) => (
+        <div
+          key={member.id}
+          className="flex items-center justify-between rounded-xl bg-slate-800 px-4 py-3"
+        >
+          <div className="flex items-center gap-3">
+  <span className="text-slate-100">
+    {member.expand?.person?.name || "Unbekannte Person"}
+  </span>
+
+  <span className="rounded-full bg-slate-700 px-3 py-1 text-xs text-slate-300">
+    {member.role}
+  </span>
+</div>
+
+{currentUserIsFestivalAdmin && (
+  <button
+    type="button"
+    onClick={() => handleRemoveFestivalMember(member.id)}
+    className="rounded-lg bg-red-600 px-3 py-1 text-xs font-medium text-white hover:bg-red-500"
+  >
+    Entfernen
+  </button>
+)}
+        </div>
+      ))
+    )}
+  </div>
+</section>
+
+{currentUserIsFestivalAdmin && (
+  <GroupForm onCreateGroup={handleCreateGroup} />
+)}
 
 <FestivalGroupsSection
   groups={groups}
