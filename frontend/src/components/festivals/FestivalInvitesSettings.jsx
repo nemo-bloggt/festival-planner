@@ -1,22 +1,34 @@
-import { useState } from "react";
-import { createInvite } from "../../services/inviteService";
+import { useEffect, useState } from "react";
+import {
+  createInvite,
+  deactivateInvite,
+  loadFestivalInvites,
+} from "../../services/inviteService";
 import Card from "../ui/Card";
 import Button from "../ui/Button";
 
 export default function FestivalInvitesSettings({ festival }) {
   const [role, setRole] = useState("member");
-  const [invite, setInvite] = useState(null);
+  const [invites, setInvites] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+
+  async function loadInvites() {
+    const loadedInvites = await loadFestivalInvites(festival.id);
+    setInvites(loadedInvites);
+  }
+
+  useEffect(() => {
+    loadInvites();
+  }, [festival.id]);
 
   async function handleCreateInvite() {
     setLoading(true);
     setError("");
-    setInvite(null);
 
     try {
-      const createdInvite = await createInvite(festival.id, role);
-      setInvite(createdInvite);
+      await createInvite(festival.id, role);
+      await loadInvites();
     } catch (error) {
       console.error(error);
       setError("Einladung konnte nicht erstellt werden.");
@@ -25,48 +37,85 @@ export default function FestivalInvitesSettings({ festival }) {
     }
   }
 
-  const inviteLink = invite
-    ? `${window.location.origin}/invite/${invite.token}`
-    : "";
+  async function handleDeactivateInvite(inviteId) {
+    await deactivateInvite(inviteId);
+    await loadInvites();
+  }
+
+  function getInviteLink(token) {
+    return `${window.location.origin}/invite/${token}`;
+  }
+
+  async function copyInviteLink(token) {
+    await navigator.clipboard.writeText(getInviteLink(token));
+  }
 
   return (
     <Card>
       <h2 className="text-xl font-semibold">Einladungen</h2>
 
       <p className="mt-2 text-sm text-slate-400">
-        Erstelle einen Einladungslink für dieses Festival.
+        Erstelle und verwalte Einladungslinks für dieses Festival.
       </p>
 
-      <div className="mt-6 space-y-4">
-        <label className="block">
-          <span className="text-sm text-slate-300">Rolle</span>
-
-          <select
-            value={role}
-            onChange={(event) => setRole(event.target.value)}
-            className="mt-2 w-full rounded-xl bg-slate-900 px-4 py-2 text-slate-100"
-          >
-            <option value="member">Mitglied</option>
-            <option value="festival_admin">Festival-Admin</option>
-          </select>
-        </label>
+      <div className="mt-6 flex gap-3">
+        <select
+          value={role}
+          onChange={(event) => setRole(event.target.value)}
+          className="rounded-xl bg-slate-900 px-4 py-2 text-slate-100"
+        >
+          <option value="member">Mitglied</option>
+          <option value="festival_admin">Festival-Admin</option>
+        </select>
 
         <Button onClick={handleCreateInvite} disabled={loading}>
-          {loading ? "Erstelle Einladung..." : "Einladung erstellen"}
+          {loading ? "Erstelle..." : "Einladung erstellen"}
         </Button>
+      </div>
 
-        {error && <p className="text-sm text-red-400">{error}</p>}
+      {error && <p className="mt-4 text-sm text-red-400">{error}</p>}
 
-        {inviteLink && (
-          <div className="rounded-xl bg-slate-900 p-4">
-            <p className="text-sm text-slate-400">Einladungslink:</p>
+      <div className="mt-8 space-y-3">
+        {invites.map((invite) => (
+          <div
+            key={invite.id}
+            className="rounded-xl bg-slate-900 p-4 text-sm"
+          >
+            <div className="flex items-center justify-between gap-4">
+              <div>
+                <p className="font-medium text-slate-100">
+                  Rolle: {invite.role}
+                </p>
+                <p className="text-slate-400">
+                  Gültig bis:{" "}
+                  {invite.expires_at
+                    ? new Date(invite.expires_at).toLocaleString("de-DE")
+                    : "ohne Ablaufdatum"}
+                </p>
+                <p className={invite.active ? "text-green-400" : "text-red-400"}>
+                  {invite.active ? "Aktiv" : "Deaktiviert"}
+                </p>
+              </div>
 
-            <input
-              value={inviteLink}
-              readOnly
-              className="mt-2 w-full rounded-lg bg-slate-950 px-3 py-2 text-sm text-slate-100"
-            />
+              <div className="flex gap-2">
+                <Button onClick={() => copyInviteLink(invite.token)}>
+                  Link kopieren
+                </Button>
+
+                {invite.active && (
+                  <Button onClick={() => handleDeactivateInvite(invite.id)}>
+                    Deaktivieren
+                  </Button>
+                )}
+              </div>
+            </div>
           </div>
+        ))}
+
+        {invites.length === 0 && (
+          <p className="text-sm text-slate-400">
+            Noch keine Einladungen erstellt.
+          </p>
         )}
       </div>
     </Card>

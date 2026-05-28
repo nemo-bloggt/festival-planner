@@ -51,3 +51,16 @@ export async function joinFestivalWithInvite(invite, personId) {
     role: invite.role,
   });
 }
+
+export async function loadFestivalInvites(festivalId) {
+  return await pb.collection("festival_invites").getFullList({
+    filter: `festival="${festivalId}"`,
+    sort: "-created",
+  });
+}
+
+export async function deactivateInvite(inviteId) {
+  return await pb.collection("festival_invites").update(inviteId, {
+    active: false,
+  });
+}
