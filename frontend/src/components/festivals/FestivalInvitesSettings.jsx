@@ -12,6 +12,7 @@ export default function FestivalInvitesSettings({ festival }) {
   const [invites, setInvites] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [copiedInviteId, setCopiedInviteId] = useState(null);
 
   async function loadInvites() {
     const loadedInvites = await loadFestivalInvites(festival.id);
@@ -46,9 +47,15 @@ export default function FestivalInvitesSettings({ festival }) {
     return `${window.location.origin}/invite/${token}`;
   }
 
-  async function copyInviteLink(token) {
-    await navigator.clipboard.writeText(getInviteLink(token));
-  }
+  async function copyInviteLink(invite) {
+  await navigator.clipboard.writeText(getInviteLink(invite.token));
+
+  setCopiedInviteId(invite.id);
+
+  setTimeout(() => {
+    setCopiedInviteId(null);
+  }, 2000);
+}
 
   return (
     <Card>
@@ -69,8 +76,8 @@ export default function FestivalInvitesSettings({ festival }) {
         </select>
 
         <Button onClick={handleCreateInvite} disabled={loading}>
-          {loading ? "Erstelle..." : "Einladung erstellen"}
-        </Button>
+  {loading ? "Erstelle..." : "Einladung erstellen"}
+</Button>
       </div>
 
       {error && <p className="mt-4 text-sm text-red-400">{error}</p>}
@@ -98,9 +105,9 @@ export default function FestivalInvitesSettings({ festival }) {
               </div>
 
               <div className="flex gap-2">
-                <Button onClick={() => copyInviteLink(invite.token)}>
-                  Link kopieren
-                </Button>
+                <Button onClick={() => copyInviteLink(invite)}>
+  {copiedInviteId === invite.id ? "Kopiert!" : "Link kopieren"}
+</Button>
 
                 {invite.active && (
                   <Button onClick={() => handleDeactivateInvite(invite.id)}>
