@@ -10,27 +10,29 @@ export async function loadFestivals() {
 export async function loadMyFestivals() {
   const currentPersonId = getCurrentPersonId();
 
-  console.log("currentPersonId:", currentPersonId);
-
   if (!currentPersonId) {
     return [];
   }
 
   const memberships = await pb.collection("festival_members").getFullList({
     filter: `person = "${currentPersonId}"`,
-    expand: "festival",
     sort: "-created",
   });
 
-  console.log("memberships:", memberships);
-  console.log(
-    "expanded festivals:",
-    memberships.map((membership) => membership.expand?.festival)
-  );
+  const festivalIds = memberships.map((membership) => membership.festival);
 
-  return memberships
-    .map((membership) => membership.expand?.festival)
-    .filter(Boolean);
+  if (festivalIds.length === 0) {
+    return [];
+  }
+
+  const filter = festivalIds
+    .map((id) => `id = "${id}"`)
+    .join(" || ");
+
+  return await pb.collection("festivals").getFullList({
+    filter,
+    sort: "-created",
+  });
 }
 
 export async function loadFestivalById(festivalId) {

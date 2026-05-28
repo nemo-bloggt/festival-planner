@@ -133,7 +133,7 @@ export default function PersonSelect({
   }
 
   return (
-    <div ref={wrapperRef} className="relative flex-1 min-w-[240px]">
+    <div ref={wrapperRef} className="relative min-w-0">
       <button
         type="button"
         onClick={() => setOpen((current) => !current)}
@@ -143,7 +143,7 @@ export default function PersonSelect({
       </button>
 
       {open && (
-        <div className="absolute z-20 mt-2 w-full rounded-xl border border-slate-700 bg-slate-900 p-2 shadow-xl">
+        <div className="absolute left-0 top-full z-20 mt-2 w-full rounded-xl border border-slate-700 bg-slate-900 p-2 shadow-xl">
           {!creating ? (
             <>
               <input

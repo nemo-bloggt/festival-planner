@@ -12,10 +12,11 @@ import {
   deleteGroup,
 } from "../services/groupService";
 import {
-  loadPeople,
   createGroupMember,
   deleteGroupMember,
 } from "../services/memberService";
+
+import { loadPeople } from "../services/personService";
 import PersonSelect from "../components/people/PersonSelect";
 import {
   addFestivalMember,
@@ -133,12 +134,22 @@ async function refreshFestivalMembers() {
   if (!festivalData?.festival?.id) return;
 
   const members = await loadFestivalMembers(festivalData.festival.id);
+
+   
+
   setFestivalMembers(members);
 }
 
 async function handleAddFestivalMember() {
-  if (!festivalData?.festival?.id) return;
-  if (!newFestivalMemberPersonId) return;
+  if (!festivalData?.festival?.id) {
+    alert("Festival wurde noch nicht geladen.");
+    return;
+  }
+
+  if (!newFestivalMemberPersonId) {
+    alert("Bitte zuerst eine Person auswählen.");
+    return;
+  }
 
   try {
     await addFestivalMember({
@@ -153,7 +164,7 @@ async function handleAddFestivalMember() {
     await refreshFestivalMembers();
   } catch (error) {
     console.error("Fehler beim Hinzufügen des Festival-Mitglieds:", error);
-    alert("Festival-Mitglied konnte nicht hinzugefügt werden.");
+    alert(error.message || "Festival-Mitglied konnte nicht hinzugefügt werden.");
   }
 }
 
@@ -167,9 +178,15 @@ async function handleRemoveMember(memberId) {
   }
 }
 
-async function handleUpdateFestivalMemberRole(memberId, role) {
-  await updateFestivalMemberRole(memberId, role);
-  await refreshFestivalMembers();
+async function handleRemoveFestivalMember(memberId) {
+  try {
+    await removeFestivalMember(memberId);
+
+    await refreshFestivalMembers();
+  } catch (error) {
+    console.error("Fehler beim Entfernen des Festival-Mitglieds:", error);
+    alert(error.message || "Festival-Mitglied konnte nicht entfernt werden.");
+  }
 }
 
 async function refreshFestivalData() {
@@ -221,6 +238,17 @@ async function handleRemoveFestivalMember(memberId) {
     alert("Festival-Mitglied konnte nicht entfernt werden.");
   }
 }
+
+async function handleUpdateFestivalMemberRole(memberId, role) {
+  try {
+    await updateFestivalMemberRole(memberId, role);
+    await refreshFestivalMembers();
+  } catch (error) {
+    console.error("Fehler beim Ändern der Rolle:", error);
+    alert(error.message || "Rolle konnte nicht geändert werden.");
+    await refreshFestivalMembers();
+  }
+}
   const { festival, groups, members, packingItems, carpools } = festivalData;
 
   return (
@@ -251,31 +279,39 @@ async function handleRemoveFestivalMember(memberId) {
   </h2>
 
   {currentUserIsFestivalAdmin && (
-  <div className="mt-4 flex flex-col gap-3 rounded-xl bg-slate-800 p-4 md:flex-row md:items-center">
-  <PersonSelect
-    value={newFestivalMemberPersonId}
-    onChange={setNewFestivalMemberPersonId}
-    placeholder="Person als Festival-Mitglied suchen..."
-  />
-  
+  <div className="mt-4 grid gap-3 rounded-xl bg-slate-800 p-4 md:grid-cols-[1fr_auto_auto] md:items-start">
+    <PersonSelect
+  value={newFestivalMemberPersonId}
+  onChange={(personId) => {
+    setNewFestivalMemberPersonId(personId);
+  }}
+  placeholder="Person als Festival-Mitglied suchen..."
+/>
 
-  <select
-    value={newFestivalMemberRole}
-    onChange={(event) => setNewFestivalMemberRole(event.target.value)}
-    className="rounded-xl bg-slate-900 px-3 py-2 text-sm text-slate-100 ring-1 ring-slate-700"
-  >
-    <option value="member">member</option>
-    <option value="festival_admin">festival_admin</option>
-  </select>
+<p className="text-xs text-slate-400">
+  Ausgewählte Person-ID: {newFestivalMemberPersonId || "keine"}
+</p>
 
-  <button
-    type="button"
-    onClick={handleAddFestivalMember}
-    className="rounded-xl bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-500"
-  >
-    Hinzufügen
-  </button>
-</div>
+    <select
+      value={newFestivalMemberRole}
+      onChange={(event) => setNewFestivalMemberRole(event.target.value)}
+      className="rounded-xl bg-slate-900 px-3 py-2 text-sm text-slate-100 ring-1 ring-slate-700"
+    >
+      <option value="member">member</option>
+      <option value="festival_admin">festival_admin</option>
+    </select>
+
+    <button
+      type="button"
+      onClick={() => {
+
+        handleAddFestivalMember();
+      }}
+      className="relative z-50 rounded-xl bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-500"
+    >
+      Hinzufügen
+    </button>
+  </div>
 )}
 
   <div className="mt-4 space-y-2">
@@ -294,9 +330,22 @@ async function handleRemoveFestivalMember(memberId) {
     {member.expand?.person?.name || "Unbekannte Person"}
   </span>
 
+  {currentUserIsFestivalAdmin ? (
+  <select
+    value={member.role}
+    onChange={(event) =>
+      handleUpdateFestivalMemberRole(member.id, event.target.value)
+    }
+    className="rounded-lg bg-slate-900 px-3 py-1 text-xs text-slate-100 ring-1 ring-slate-700"
+  >
+    <option value="member">member</option>
+    <option value="festival_admin">festival_admin</option>
+  </select>
+) : (
   <span className="rounded-full bg-slate-700 px-3 py-1 text-xs text-slate-300">
     {member.role}
   </span>
+)}
 </div>
 
 {currentUserIsFestivalAdmin && (
