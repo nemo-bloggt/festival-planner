@@ -22,6 +22,7 @@ import { deleteFestival } from "../services/festivalService";
 import FestivalDangerZone from "../components/festivals/FestivalDangerZone";
 import FestivalForm from "../components/festivals/FestivalForm";
 import { updateFestival } from "../services/festivalService";
+import FestivalInvitesSettings from "../components/festivals/FestivalInvitesSettings";
 
 export default function FestivalSettingsPage() {
   const { festivalSlug } = useParams();
@@ -284,6 +285,10 @@ async function handleUpdateGeneralSettings(event) {
     festival={festival}
     onDeleteFestival={handleDeleteFestival}
   />
+)}
+
+{activeTab === "invites" && (
+  <FestivalInvitesSettings festival={festival} />
 )}
       </div>
     </main>

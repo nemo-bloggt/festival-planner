@@ -11,6 +11,7 @@ import FestivalCreatePage from "../pages/FestivalCreatePage";
 import FestivalEditPage from "../pages/FestivalEditPage";
 import PeoplePage from "../pages/PeoplePage";
 import FestivalSettingsPage from "../pages/FestivalSettingsPage";
+import InviteJoinPage from "../pages/InviteJoinPage";
 
 export default function AppRouter() {
   return (
@@ -33,6 +34,7 @@ export default function AppRouter() {
             <Route path="/festivals/:festivalSlug/edit" element={<FestivalEditPage />} />
             <Route path="/admin" element={<AdminPage />} />
             <Route path="/people" element={<PeoplePage />} />
+            <Route path="/invite/:token" element={<InviteJoinPage />} />
           </Route>
         </Routes>
       </AuthProvider>
