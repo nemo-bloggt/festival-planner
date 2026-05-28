@@ -43,7 +43,10 @@ export async function loadFestivalById(festivalId) {
 
 export async function loadFestivalBySlug(slug) {
   const festival = await pb.collection("festivals").getFirstListItem(
-    `slug = "${slug}"`
+    `slug = "${slug}"`,
+    {
+      requestKey: null,
+    }
   );
 
   return await loadFestivalRelations(festival);
@@ -53,9 +56,10 @@ async function loadFestivalRelations(festival) {
   const festivalId = festival.id;
 
   const groups = await pb.collection("groups").getFullList({
-    filter: `festival = "${festivalId}"`,
-    sort: "name",
-  });
+  filter: `festival = "${festivalId}"`,
+  sort: "name",
+  requestKey: null,
+});
 
   const groupIds = groups.map((group) => group.id);
 
@@ -64,28 +68,31 @@ async function loadFestivalRelations(festival) {
     .join(" || ");
 
   const members = groupFilter
-    ? await pb.collection("group_members").getFullList({
-        filter: groupFilter,
-        sort: "created",
-        expand: "person",
-      })
-    : [];
+  ? await pb.collection("group_members").getFullList({
+      filter: groupFilter,
+      sort: "created",
+      expand: "person",
+      requestKey: null,
+    })
+  : [];
 
   const packingItems = groupFilter
-    ? await pb.collection("packing_items").getFullList({
-        filter: groupFilter,
-        sort: "item_name",
-        expand: "assigned_person",
-      })
-    : [];
+  ? await pb.collection("packing_items").getFullList({
+      filter: groupFilter,
+      sort: "item_name",
+      expand: "assigned_person",
+      requestKey: null,
+    })
+  : [];
 
   const carpools = groupFilter
-    ? await pb.collection("carpools").getFullList({
-        filter: groupFilter,
-        sort: "departure_time",
-        expand: "driver",
-      })
-    : [];
+  ? await pb.collection("carpools").getFullList({
+      filter: groupFilter,
+      sort: "departure_time",
+      expand: "driver",
+      requestKey: null,
+    })
+  : [];
 
   return {
     festival,
