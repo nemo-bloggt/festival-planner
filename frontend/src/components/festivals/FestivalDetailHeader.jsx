@@ -20,10 +20,10 @@ export default function FestivalDetailHeader({
 
         {canManageFestival && (
           <Link
-            to={`/festivals/${festival.slug}/edit`}
+  to={`/festivals/${festival.slug}/settings`}
             className="rounded-xl bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-500"
           >
-            Festival bearbeiten
+            Festival verwalten
           </Link>
         )}
       </div>

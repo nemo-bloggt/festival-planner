@@ -17,12 +17,8 @@ import {
 } from "../services/memberService";
 
 import { loadPeople } from "../services/personService";
-import PersonSelect from "../components/people/PersonSelect";
 import {
-  addFestivalMember,
   loadFestivalMembers,
-  removeFestivalMember,
-  updateFestivalMemberRole,
 } from "../services/festivalMemberService";
 import {
   getCurrentPersonId,
@@ -266,102 +262,13 @@ async function handleUpdateFestivalMemberRole(memberId, role) {
   canManageFestival={currentUserIsFestivalAdmin}
 />
 
+
 <p className="mt-2 text-xs text-slate-500">
   Aktuelle Person-ID: {currentPersonId || "nicht verknüpft"}
 </p>
 <p className="text-xs text-slate-500">
   Festival Admin: {currentUserIsFestivalAdmin ? "JA" : "NEIN"}
 </p>
-
-<section className="mt-8 rounded-2xl bg-slate-900 p-6">
-  <h2 className="text-xl font-semibold text-slate-100">
-    Festival-Mitglieder
-  </h2>
-
-  {currentUserIsFestivalAdmin && (
-  <div className="mt-4 grid gap-3 rounded-xl bg-slate-800 p-4 md:grid-cols-[1fr_auto_auto] md:items-start">
-    <PersonSelect
-  value={newFestivalMemberPersonId}
-  onChange={(personId) => {
-    setNewFestivalMemberPersonId(personId);
-  }}
-  placeholder="Person als Festival-Mitglied suchen..."
-/>
-
-<p className="text-xs text-slate-400">
-  Ausgewählte Person-ID: {newFestivalMemberPersonId || "keine"}
-</p>
-
-    <select
-      value={newFestivalMemberRole}
-      onChange={(event) => setNewFestivalMemberRole(event.target.value)}
-      className="rounded-xl bg-slate-900 px-3 py-2 text-sm text-slate-100 ring-1 ring-slate-700"
-    >
-      <option value="member">member</option>
-      <option value="festival_admin">festival_admin</option>
-    </select>
-
-    <button
-      type="button"
-      onClick={() => {
-
-        handleAddFestivalMember();
-      }}
-      className="relative z-50 rounded-xl bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-500"
-    >
-      Hinzufügen
-    </button>
-  </div>
-)}
-
-  <div className="mt-4 space-y-2">
-    {festivalMembers.length === 0 ? (
-      <p className="text-sm text-slate-400">
-        Noch keine Festival-Mitglieder angelegt.
-      </p>
-    ) : (
-      festivalMembers.map((member) => (
-        <div
-          key={member.id}
-          className="flex items-center justify-between rounded-xl bg-slate-800 px-4 py-3"
-        >
-          <div className="flex items-center gap-3">
-  <span className="text-slate-100">
-    {member.expand?.person?.name || "Unbekannte Person"}
-  </span>
-
-  {currentUserIsFestivalAdmin ? (
-  <select
-    value={member.role}
-    onChange={(event) =>
-      handleUpdateFestivalMemberRole(member.id, event.target.value)
-    }
-    className="rounded-lg bg-slate-900 px-3 py-1 text-xs text-slate-100 ring-1 ring-slate-700"
-  >
-    <option value="member">member</option>
-    <option value="festival_admin">festival_admin</option>
-  </select>
-) : (
-  <span className="rounded-full bg-slate-700 px-3 py-1 text-xs text-slate-300">
-    {member.role}
-  </span>
-)}
-</div>
-
-{currentUserIsFestivalAdmin && (
-  <button
-    type="button"
-    onClick={() => handleRemoveFestivalMember(member.id)}
-    className="rounded-lg bg-red-600 px-3 py-1 text-xs font-medium text-white hover:bg-red-500"
-  >
-    Entfernen
-  </button>
-)}
-        </div>
-      ))
-    )}
-  </div>
-</section>
 
 {currentUserIsFestivalAdmin && (
   <GroupForm onCreateGroup={handleCreateGroup} />

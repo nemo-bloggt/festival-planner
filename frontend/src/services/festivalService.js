@@ -97,10 +97,22 @@ async function loadFestivalRelations(festival) {
 }
 
 export async function createFestival(data) {
-  return await pb.collection("festivals").create({
+  const currentPersonId = getCurrentPersonId();
+
+  const festival = await pb.collection("festivals").create({
     ...data,
     created_by: pb.authStore.model.id,
   });
+
+  if (currentPersonId) {
+    await pb.collection("festival_members").create({
+      festival: festival.id,
+      person: currentPersonId,
+      role: "festival_admin",
+    });
+  }
+
+  return festival;
 }
 
 export async function updateFestival(festivalId, data) {
